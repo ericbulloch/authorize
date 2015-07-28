@@ -45,7 +45,7 @@ class BaseApi(object):
         if is_test:
             self.server = 'apitest.authorize.net'
         else:
-            self.server = 'api2.authorize.net'
+            self.server = 'api.authorize.net'
         self.path = "/xml/v1/request.api"
         self.is_test = is_test
         self.login = login

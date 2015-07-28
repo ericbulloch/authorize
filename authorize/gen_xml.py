@@ -7,7 +7,7 @@ from xml.etree.cElementTree import Element, iselement
 
 from authorize import responses
 
-API_SCHEMA = 'https://api2.authorize.net/xml/v1/schema/AnetApiSchema.xsd'
+API_SCHEMA = 'https://api.authorize.net/xml/v1/schema/AnetApiSchema.xsd'
 API_SCHEMA_NS = "AnetApi/xml/v1/schema/AnetApiSchema.xsd"
 PREFIX = "{AnetApi/xml/v1/schema/AnetApiSchema.xsd}"
 
@@ -502,7 +502,7 @@ def profile(**kw):
     content = [
         x.merchantCustomerId(kw['customer_id']),
         x.description(kw.get('description')),
-        x.email(kw.get('email'))
+        x.email(kw.get('email')),
     ]
 
     payment_profiles = kw.get('payment_profiles', None)

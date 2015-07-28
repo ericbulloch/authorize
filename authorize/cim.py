@@ -5,7 +5,7 @@ from authorize.util import request
 from authorize.gen_xml import INDIVIDUAL, BUSINESS, ECHECK_CCD, ECHECK_PPD, ECHECK_TEL, ECHECK_WEB
 from authorize.gen_xml import BANK, CREDIT_CARD, VALIDATION_NONE, CAPTURE_ONLY, AUTH_CAPTURE
 from authorize.gen_xml import VALIDATION_TEST, VALIDATION_LIVE, ACCOUNT_CHECKING, ACCOUNT_SAVINGS
-from authorize.gen_xml import ACCOUNT_BUSINESS_CHECKING, AUTH_ONLY, CREDIT, PRIOR_AUTH_CAPTURE
+from authorize.gen_xml import ACCOUNT_BUSINESS_CHECKING, AUTH_ONLY, CREDIT, PRIOR_AUTH_CAPTURE, VOID
 
 class Api(base.BaseApi):
     """
@@ -120,7 +120,8 @@ class Api(base.BaseApi):
                 ship_phone:
                 ship_fax:
         """
-        return 'createCustomerProfileRequest', kw, xml.profile(**kw)
+        return ('createCustomerProfileRequest', kw, xml.profile(**kw),
+            x.validationMode(kw.get('validation_mode', VALIDATION_NONE)))
 
     @request
     def create_payment_profile(**kw):
@@ -170,7 +171,7 @@ class Api(base.BaseApi):
                 amount: L{float} or L{decimal.Decimal}
                 customer_profile_id: L{unicode} or L{int}
                 customer_payment_profile_id: L{unicode} or L{int}
-                profile_type: L{AUTH_ONLY}, L{CAPTURE_ONLY}, L{AUTH_CAPTURE}, L{PRIOR_AUTH_CAPTURE}, L{CREDIT} (default AUTH_ONLY)
+                profile_type: L{VOID}, L{AUTH_ONLY}, L{CAPTURE_ONLY}, L{AUTH_CAPTURE}, L{PRIOR_AUTH_CAPTURE}, L{CREDIT} (default AUTH_ONLY)
                 approval_code: L{unicode}, 6 chars authorization code of an original transaction (only for CAPTURE_ONLY)
 
             OPTIONAL:
@@ -199,6 +200,12 @@ class Api(base.BaseApi):
                 recurring: L{bool}, default False
                 ccv:
         """
+        # This is a work-around to not make the code in gen_xml.py worse
+        # than it already is. Basically no amount is needed in case of a
+        # VOID transaction, but the code in gen_xml.transaction requires
+        # an amount. This should eventually be moved in gen_xml.py.
+        if kw.get('profile_type') == VOID:
+            kw['amount'] = None
         return 'createCustomerProfileTransactionRequest', kw, xml.transaction(**kw)
 
     @request
@@ -350,6 +357,6 @@ class Api(base.BaseApi):
         return ('validateCustomerPaymentProfileRequest', kw,
             x.customerProfileId(kw['customer_profile_id']),
             x.customerPaymentProfileId(kw['customer_payment_profile_id']),
-            x.customerShippingAddressId(kw['customer_address_id']),
+            x.customerShippingAddressId(kw.get('customer_address_id')),
             x.validationMode(kw.get('validation_mode', VALIDATION_NONE))
         )

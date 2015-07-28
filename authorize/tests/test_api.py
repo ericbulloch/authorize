@@ -8,7 +8,7 @@ class TestAPIUsage(TestCase):
         """
 
         api = aim.Api(login=u"ciao", key=u"handsome", do_raise=True)
-        assert api.server.startswith("secure2")
+        assert api.server.startswith("secure")
         
         api = aim.Api(login=u"ciao", key=u"handsome", is_test=True, do_raise=True)
         assert api.server.startswith("test")
