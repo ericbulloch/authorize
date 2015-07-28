@@ -120,7 +120,7 @@ class Api(base.BaseApi):
                 ship_phone:
                 ship_fax:
         """
-        return 'createCustomerProfileRequest', kw, xml.transaction(**kw)
+        return 'createCustomerProfileRequest', kw, xml.profile(**kw)
 
     @request
     def create_payment_profile(**kw):
@@ -350,6 +350,6 @@ class Api(base.BaseApi):
         return ('validateCustomerPaymentProfileRequest', kw,
             x.customerProfileId(kw['customer_profile_id']),
             x.customerPaymentProfileId(kw['customer_payment_profile_id']),
-            x.customerShippingAddressId(kw.get('customer_address_id')),
+            x.customerShippingAddressId(kw['customer_address_id']),
             x.validationMode(kw.get('validation_mode', VALIDATION_NONE))
         )
