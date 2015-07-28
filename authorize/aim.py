@@ -143,7 +143,7 @@ class Api(base.BaseApi):
     def __init__(self, *args, **kwargs):
         super(Api, self).__init__(*args, **kwargs)
         if not self.is_test:
-            self.server = "secure.authorize.net"
+            self.server = "secure2.authorize.net"
         else:
             self.server = "test.authorize.net"
 
